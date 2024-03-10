@@ -27,7 +27,7 @@ address2 = "required"
 
 [[ships]]
 id = "required,uuid"
-make = "oneOf=x-wing y-wing a-wing millenium falcon tie-fighter"
+make = "oneof=x-wing y-wing a-wing millenium falcon tie-fighter"
 ```
 
 

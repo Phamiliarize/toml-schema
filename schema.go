@@ -35,6 +35,10 @@ func (v *validator) LoadSchema(name string, tomlSchema string) error {
 }
 
 func (v *validator) ValidateSchema(name string, data map[string]interface{}) map[string]interface{} {
+	// We need to re-cast some values to work with the validator https://github.com/go-playground/validator/issues/1108
+	patchedData := data
+	patchData(patchedData, data)
+
 	return v.Validator.ValidateMap(data, v.rules[name].(map[string]interface{}))
 }
 
@@ -52,6 +56,27 @@ func makeSchema(root map[string]interface{}, raw map[string]interface{}) {
 			makeSchema(root[k].(map[string]interface{}), schema)
 		default:
 			panic(fmt.Sprintf("could not parse schema field %v with value %v", k, val))
+		}
+	}
+}
+
+// patchData is a temporary function until go-validator can patch #1108
+func patchData(root map[string]interface{}, raw map[string]interface{}) {
+	// We need to re-cast some values to work with the validator https://github.com/go-playground/validator/issues/1108
+	for k, v := range raw {
+		switch val := v.(type) {
+		case map[string]interface{}:
+			patchData(root[k].(map[string]interface{}), val)
+		case []interface{}:
+			new := []map[string]interface{}{}
+
+			for _, value := range val {
+				process := value.(map[string]interface{})
+				patchData(process, process)
+				new = append(new, process)
+			}
+
+			root[k] = new
 		}
 	}
 }

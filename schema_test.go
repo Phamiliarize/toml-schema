@@ -25,7 +25,13 @@ func TestValidator_LoadSchema(t *testing.T) {
 		"name": "required,min=1,max=128",
 		"ships": map[string]interface{}{
 			"id":   "required,uuid",
-			"make": "oneOf=x-wing y-wing a-wing millenium falcon tie-fighter",
+			"make": "oneof=x-wing y-wing a-wing millenium falcon tie-fighter",
+			"data": map[string]interface{}{
+				"id": "required,uuid",
+				"data": map[string]interface{}{
+					"id": "required,uuid",
+				},
+			},
 		},
 	}
 	if !reflect.DeepEqual(control, tomlSchema.rules["character"]) {
@@ -57,7 +63,7 @@ func TestValidator_ValidateSchema(t *testing.T) {
 		{
 			schemaName:  "character",
 			data:        data["character"].(map[string]interface{})["1"].(map[string]interface{}),
-			expectedErr: 1,
+			expectedErr: 0,
 		},
 		{
 			schemaName:  "basic",
