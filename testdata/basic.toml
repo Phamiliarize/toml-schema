@@ -1,0 +1,5 @@
+name = "required,min=1,max=128"
+email = "required,email"
+age = "required,number,min=1,max=150"
+ecash = "number,required"
+

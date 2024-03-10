@@ -1,0 +1,12 @@
+name = "required,min=1,max=128"
+age = "required,number,min=1,max=1500"
+credits = "number,required,min=0,max=150000"
+force_sensitive = "required"
+
+[location]
+address1 = "required"
+address2 = "required"
+
+[[ships]]
+id = "required,uuid"
+make = "oneOf=x-wing y-wing a-wing millenium falcon tie-fighter"

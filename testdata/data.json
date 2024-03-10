@@ -1,0 +1,39 @@
+{
+    "basic": {
+        "1": {
+            "name": "Luke Skywalker",
+            "email": "skywalker@lucasfilms.com",
+            "age": 20,
+            "ecash": 200
+        },
+        "2": {},
+        "3": {
+            "name": "",
+            "email": "skywalker",
+            "age": 200,
+            "ecash": "six"
+        }
+    },
+    "character": {
+        "1": {
+            "name": "Luke Skywalker",
+            "age": 18,
+            "credits": 150000,
+            "force_sensitive": true,
+            "location": {
+                "address1": "Tattoine",
+                "address2": "Moisture Farm"
+            },
+            "ships": [
+                {
+                    "id": "4f08ed09-2b53-439d-b89f-7844f2aa0e40",
+                    "make": "x-wing"
+                },
+                {
+                    "id": "1a22ed09-2b53-439d-b89f-7844f2aa0e40",
+                    "make": "y-wing"
+                }
+            ]
+        }
+    }
+}
