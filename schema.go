@@ -7,20 +7,20 @@ import (
 	validate "github.com/go-playground/validator/v10"
 )
 
-type validator struct {
+type Validator struct {
 	Validator *validate.Validate
 	rules     map[string]interface{}
 }
 
-func NewValidator(v *validate.Validate) validator {
-	return validator{
+func NewValidator(v *validate.Validate) Validator {
+	return Validator{
 		Validator: v,
 		rules:     map[string]interface{}{},
 	}
 }
 
 // Loads schema file and passes it through recursive function to generate a rules map
-func (v *validator) LoadSchema(name string, tomlSchema string) error {
+func (v *Validator) LoadSchema(name string, tomlSchema string) error {
 	var raw map[string]interface{}
 	_, err := toml.Decode(tomlSchema, &raw)
 	if err != nil {
@@ -34,7 +34,7 @@ func (v *validator) LoadSchema(name string, tomlSchema string) error {
 	return nil
 }
 
-func (v *validator) ValidateSchema(name string, data map[string]interface{}) map[string]interface{} {
+func (v *Validator) ValidateSchema(name string, data map[string]interface{}) map[string]interface{} {
 	// We need to re-cast some values to work with the validator https://github.com/go-playground/validator/issues/1108
 	patchedData := data
 	patchData(patchedData, data)

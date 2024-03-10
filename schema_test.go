@@ -96,7 +96,7 @@ func TestValidator_ValidateSchema(t *testing.T) {
 	}
 }
 
-func loadTestSchema(v *validator, name string) string {
+func loadTestSchema(v *Validator, name string) string {
 	toml, err := os.ReadFile(fmt.Sprintf("./testdata/%s.toml", name))
 	if err != nil {
 		panic(err)
