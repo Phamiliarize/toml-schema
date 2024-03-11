@@ -1,18 +1,18 @@
-name = "required,min=1,max=128"
-age = "required,number,min=1,max=1500"
+name = "string,required,min=1,max=128"
+age = "number,required,min=1,max=1500"
 credits = "number,required,min=0,max=150000"
-force_sensitive = "required"
+force_sensitive = "boolean,required"
 
 [location]
-address1 = "required"
-address2 = "required"
+address1 = "string,required"
+address2 = "string,required"
 
 [[ships]]
-id = "required,uuid"
-make = "oneof=x-wing y-wing a-wing millenium falcon tie-fighter"
+id = "string,required,uuid"
+make = "string,oneof=x-wing y-wing a-wing millenium falcon tie-fighter"
 
 [[ships.data]]
-id = "required,uuid"
+id = "string,required,uuid"
 
 [[ships.data.data]]
-id = "required,uuid"
+id = "string,required,uuid"

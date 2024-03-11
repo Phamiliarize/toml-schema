@@ -14,6 +14,13 @@
             "ecash": "six"
         }
     },
+    "basicType": {
+        "1": {
+            "test1": 2,
+            "test2": true,
+            "test3": "true"
+        }
+    },
     "character": {
         "1": {
             "name": "Luke Skywalker",

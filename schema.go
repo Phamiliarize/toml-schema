@@ -2,6 +2,9 @@ package schema
 
 import (
 	"fmt"
+	"reflect"
+	"slices"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	validate "github.com/go-playground/validator/v10"
@@ -13,6 +16,8 @@ type Validator struct {
 }
 
 func NewValidator(v *validate.Validate) Validator {
+	v.RegisterValidation("string", isString)
+	v.RegisterValidation("boolean", isBoolean)
 	return Validator{
 		Validator: v,
 		rules:     map[string]interface{}{},
@@ -29,7 +34,10 @@ func (v *Validator) LoadSchema(name string, tomlSchema string) error {
 
 	v.rules[name] = map[string]interface{}{}
 
-	makeSchema(v.rules[name].(map[string]interface{}), raw)
+	err = makeSchema(v.rules[name].(map[string]interface{}), raw)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
@@ -42,10 +50,13 @@ func (v *Validator) ValidateSchema(name string, data map[string]interface{}) map
 	return v.Validator.ValidateMap(data, v.rules[name].(map[string]interface{}))
 }
 
-func makeSchema(root map[string]interface{}, raw map[string]interface{}) {
+func makeSchema(root map[string]interface{}, raw map[string]interface{}) error {
 	for k, v := range raw {
 		switch val := v.(type) {
 		case string:
+			if !slices.Contains([]string{"string", "number", "boolean"}, strings.Split(val, ",")[0]) {
+				return fmt.Errorf("field %s is missing basic typing as first validator", k)
+			}
 			root[k] = val
 		case map[string]interface{}:
 			root[k] = map[string]interface{}{}
@@ -55,9 +66,10 @@ func makeSchema(root map[string]interface{}, raw map[string]interface{}) {
 			schema := val[0]
 			makeSchema(root[k].(map[string]interface{}), schema)
 		default:
-			panic(fmt.Sprintf("could not parse schema field %v with value %v", k, val))
+			return fmt.Errorf("could not parse schema field %v with value %v", k, val)
 		}
 	}
+	return nil
 }
 
 // patchData is a temporary function until go-validator can patch #1108
@@ -79,4 +91,12 @@ func patchData(root map[string]interface{}, raw map[string]interface{}) {
 			root[k] = new
 		}
 	}
+}
+
+func isString(fl validate.FieldLevel) bool {
+	return fl.Field().Kind() == reflect.String
+}
+
+func isBoolean(fl validate.FieldLevel) bool {
+	return fl.Field().Kind() == reflect.Bool
 }

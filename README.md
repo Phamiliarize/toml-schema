@@ -13,21 +13,21 @@ Schema are written in [TOML](https://toml.io/), like so:
 
 ```toml
 # key = "validators"
-name = "required,min=1,max=128"
-age = "required,number,min=1,max=150"
+name = "string,required,min=1,max=128"
+age = "number,required,int,min=1,max=150"
 ecash = "number,required,min=0,max=150000"
-is_cool = "required"
+is_cool = "boolean,required"
 
 # A nested map can be added with [key]
 [location]
-address1 = "required"
-address2 = "required"
+address1 = "string,required"
+address2 = "string,required"
 
 # A slice is added with [[key]]
 
 [[ships]]
-id = "required,uuid"
-make = "oneof=x-wing y-wing a-wing millenium falcon tie-fighter"
+id = "string,required,uuid"
+make = "string,oneof=x-wing y-wing a-wing millenium falcon tie-fighter"
 ```
 
 
@@ -36,25 +36,34 @@ make = "oneof=x-wing y-wing a-wing millenium falcon tie-fighter"
 To validate data against your schema and constraints:
 
 ```go
-dogShelter := LoadSchema(dogShelterSchema)
-err := dogShelter.Validate(myData)
+import (
+    "github.com/Phamiliarize/toml-schema"
+    "github.com/go-playground/validator/v10"
+)
+
+// Use any v10 instance of a go-playground/validator
+// This allows you to extend the potential validators
+v := schema.NewValidator(validator.New())
+err := v.LoadSchema("mySchema", `test = "string,required"`)
+if err != nil {
+    panic(err)
+}
+
+// Returns a map[string]validation.ValidationErrors
+err := v.ValidateSchema("mySchema", myData)
 if err != nil {
     panic(err)
 }
 ```
 
 
-## Supported Types & Constraints
-`toml-schema` bases it's typing with [JSON](https://www.w3schools.com/js/js_json_datatypes.asp) and [Lua](https://www.lua.org/pil/2.html) in mind; this covers the majority of cases.
+## Basic Types & Constraints
+The supported constraints/validations are basically inline with [go-playground/validator](https://github.com/go-playground/validator?tab=readme-ov-file#baked-in-validations) *but* since the end usecase is for [JSON](https://www.w3schools.com/js/js_json_datatypes.asp) and [Lua](https://www.lua.org/pil/2.html) we require a "type constraint" on all fields.
 
+Every field **must start with a basic type**. The basic types supported are:
 
-| Type | GoLang Type |
-| ---- | ---- |
-| `string` | `string` |
-| `number` | `float64` |
-| `boolean` | `bool` |
-| `array` | `[]interface{}` |
-| `object` | `map[string]interface{}` |
-| `nil` | `nil` |
-
-The supported constraints/validations are basically inline with that types offerings for [go-playground/validator](https://github.com/go-playground/validator?tab=readme-ov-file#baked-in-validations).
+| Type | GoLang Type | Validators | 
+| ---- | ---- | ---- |
+| string | `string` | `string` |
+| number | `float64` or `int` | `number`|
+| boolean | `bool` | `boolean` |
