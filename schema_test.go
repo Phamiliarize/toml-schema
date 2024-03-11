@@ -61,6 +61,10 @@ func TestValidator_ValidateSchema(t *testing.T) {
 	tomlSchema := NewValidator(validate.New())
 	loadTestSchema(&tomlSchema, "basic")
 	loadTestSchema(&tomlSchema, "character")
+	_ = tomlSchema.LoadSchema("basicType", `test1 = "string,required"
+test2 = "number,required"
+test3 = "boolean,required"
+`)
 	data := loadTestData()
 
 	cases := []struct {
@@ -87,6 +91,11 @@ func TestValidator_ValidateSchema(t *testing.T) {
 			schemaName:  "basic",
 			data:        data["basic"].(map[string]interface{})["3"].(map[string]interface{}),
 			expectedErr: 4,
+		},
+		{
+			schemaName:  "basicType",
+			data:        data["basicType"].(map[string]interface{})["1"].(map[string]interface{}),
+			expectedErr: 3,
 		},
 	}
 
