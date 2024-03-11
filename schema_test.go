@@ -15,21 +15,21 @@ func TestValidator_LoadSchema(t *testing.T) {
 	loadTestSchema(&tomlSchema, "character")
 
 	control := map[string]interface{}{
-		"age":             "required,number,min=1,max=1500",
+		"age":             "number,required,min=1,max=1500",
 		"credits":         "number,required,min=0,max=150000",
-		"force_sensitive": "required",
+		"force_sensitive": "boolean,required",
 		"location": map[string]interface{}{
-			"address1": "required",
-			"address2": "required",
+			"address1": "string,required",
+			"address2": "string,required",
 		},
-		"name": "required,min=1,max=128",
+		"name": "string,required,min=1,max=128",
 		"ships": map[string]interface{}{
-			"id":   "required,uuid",
-			"make": "oneof=x-wing y-wing a-wing millenium falcon tie-fighter",
+			"id":   "string,required,uuid",
+			"make": "string,oneof=x-wing y-wing a-wing millenium falcon tie-fighter",
 			"data": map[string]interface{}{
-				"id": "required,uuid",
+				"id": "string,required,uuid",
 				"data": map[string]interface{}{
-					"id": "required,uuid",
+					"id": "string,required,uuid",
 				},
 			},
 		},
@@ -44,6 +44,14 @@ func TestValidator_LoadSchema_BadSchema(t *testing.T) {
 	err := tomlSchema.LoadSchema("test", `
 	test =
 	`)
+	if err == nil {
+		t.Errorf("expected bad schema load to raise an error")
+	}
+}
+
+func TestValidator_LoadSchema_MissingBasicType(t *testing.T) {
+	tomlSchema := NewValidator(validate.New())
+	err := tomlSchema.LoadSchema("test", `test = "required,min=1"`)
 	if err == nil {
 		t.Errorf("expected bad schema load to raise an error")
 	}
